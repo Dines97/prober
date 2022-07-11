@@ -1,0 +1,6 @@
+domain: prober.io
+layout:
+- go.kubebuilder.io/v3
+projectName: prober
+repo: prober.io/prober
+version: "3"
