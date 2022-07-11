@@ -1,0 +1,6 @@
+apiVersion: probe.prober.io/v1alpha1
+kind: Probe
+metadata:
+  name: probe-sample
+spec:
+  # TODO(user): Add fields here
