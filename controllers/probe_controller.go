@@ -18,13 +18,16 @@ package controllers
 
 import (
 	"context"
+	"reflect"
 
 	"k8s.io/apimachinery/pkg/runtime"
 	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 	"sigs.k8s.io/controller-runtime/pkg/log"
 
+	"prober.io/prober/api/v1alpha1"
 	probev1alpha1 "prober.io/prober/api/v1alpha1"
+	"prober.io/prober/probes"
 )
 
 // ProbeReconciler reconciles a Probe object
@@ -50,6 +53,48 @@ func (r *ProbeReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctrl
 	_ = log.FromContext(ctx)
 
 	// TODO(user): your logic here
+	var probe v1alpha1.Probe
+	if err := r.Get(ctx, req.NamespacedName, &probe); err != nil {
+		log.Log.Error(err, "Unable to fetch Probe")
+
+		return ctrl.Result{}, client.IgnoreNotFound(err)
+	}
+
+	log.Log.Info("Reconciling", "Name", probe.Name)
+
+	// pkg, err := importer.Default().Import("probes")
+	// if err != nil {
+	// 	log.Log.Error(err, "could not get probes")
+	// }
+	//
+	// for _, declName := range pkg.Scope().Names() {
+	//
+	// }
+
+	// Iterate over fields of probe
+	v := reflect.ValueOf(probe.Spec)
+	for i := 0; i < v.NumField(); i++ {
+
+		// Find fields that dont equal to nil
+		if s := v.Field(i).Interface(); s != nil {
+
+			// fmt.Println(s)
+
+			// Try to convert this field to ProbeRunner
+			probeRunner, ok := s.(probes.ProbeRunner)
+			if !ok {
+				//fmt.Println("Not a type of Probe")
+				continue
+			}
+
+			probe.Status.RunResult, _ = probeRunner.Run()
+
+			if err := r.Status().Update(ctx, &probe); err != nil {
+				log.Log.Error(err, "Unable to update Probe status")
+				return ctrl.Result{}, err
+			}
+		}
+	}
 
 	return ctrl.Result{}, nil
 }

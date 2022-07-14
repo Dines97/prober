@@ -1,0 +1,8 @@
+apiVersion: probe.prober.io/v1alpha1
+kind: Probe
+metadata:
+  name: rabbitmq-probe
+spec:
+  description: Some description
+  rabbitmq: 
+    connectionString: amqp://localhost:5672

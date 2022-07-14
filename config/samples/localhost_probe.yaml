@@ -1,0 +1,10 @@
+apiVersion: probe.prober.io/v1alpha1
+kind: Probe
+metadata:
+  name: localhost-probe
+spec:
+  description: Some description
+  resolution: 
+    host: localhost
+    registrations: 
+      - 127.0.0.1

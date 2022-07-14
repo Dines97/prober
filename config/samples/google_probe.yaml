@@ -1,0 +1,10 @@
+apiVersion: probe.prober.io/v1alpha1
+kind: Probe
+metadata:
+  name: google-probe
+spec:
+  description: Some description
+  resolution: 
+    host: google.com
+    registrations: 
+      - 216.58.214.142
