@@ -42,6 +42,10 @@ spec:
               description:
                 description: Optional probe description field
                 type: string
+              period:
+                default: 30
+                description: Periodicity of probe in seconds
+                type: integer
               rabbitmq:
                 description: Template of probe
                 properties:

@@ -39,12 +39,17 @@ type ProbeSpec struct {
 	// +optional
 	Tags []string `json:"tags,omitempty"`
 
+	// Periodicity of probe in seconds
+	// +optional
+	// +kubebuilder:default:=30
+	Period int `json:"period"`
+
 	// Template of probe
 	RabbitMQ probes.RabbitMQ `json:"rabbitmq,omitempty"`
 
 	Resolution probes.Resolution `json:"resolution,omitempty"`
 
-	//Probe probes.Probe `json:"probe"`
+	// Probe probes.Probe `json:"probe"`
 }
 
 // ProbeStatus defines the observed state of Probe
@@ -56,8 +61,8 @@ type ProbeStatus struct {
 	RunResult probes.RunResult `json:"runResult"`
 }
 
-//+kubebuilder:object:root=true
-//+kubebuilder:subresource:status
+// +kubebuilder:object:root=true
+// +kubebuilder:subresource:status
 
 // Probe is the Schema for the probes API
 // +kubebuilder:printcolumn:name="Last run",type=string,JSONPath=`.status.runResult`
@@ -71,7 +76,7 @@ type Probe struct {
 	Status ProbeStatus `json:"status,omitempty"`
 }
 
-//+kubebuilder:object:root=true
+// +kubebuilder:object:root=true
 
 // ProbeList contains a list of Probe
 type ProbeList struct {

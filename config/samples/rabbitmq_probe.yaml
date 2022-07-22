@@ -4,5 +4,6 @@ metadata:
   name: rabbitmq-probe
 spec:
   description: Some description
+  period: 5
   rabbitmq: 
     connectionString: amqp://localhost:5672

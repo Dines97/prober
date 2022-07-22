@@ -19,6 +19,7 @@ package controllers
 import (
 	"context"
 	"reflect"
+	"time"
 
 	"k8s.io/apimachinery/pkg/runtime"
 	ctrl "sigs.k8s.io/controller-runtime"
@@ -52,12 +53,16 @@ type ProbeReconciler struct {
 func (r *ProbeReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctrl.Result, error) {
 	_ = log.FromContext(ctx)
 
+	result := ctrl.Result{
+		RequeueAfter: time.Duration(30 * time.Second),
+	}
+
 	// TODO(user): your logic here
 	var probe v1alpha1.Probe
 	if err := r.Get(ctx, req.NamespacedName, &probe); err != nil {
 		log.Log.Error(err, "Unable to fetch Probe")
 
-		return ctrl.Result{}, client.IgnoreNotFound(err)
+		return result, client.IgnoreNotFound(err)
 	}
 
 	log.Log.Info("Reconciling", "Name", probe.Name)
@@ -70,6 +75,8 @@ func (r *ProbeReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctrl
 	// for _, declName := range pkg.Scope().Names() {
 	//
 	// }
+
+	result.RequeueAfter = time.Duration(probe.Spec.Period * int(time.Second))
 
 	// Iterate over fields of probe
 	v := reflect.ValueOf(probe.Spec)
@@ -91,12 +98,12 @@ func (r *ProbeReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctrl
 
 			if err := r.Status().Update(ctx, &probe); err != nil {
 				log.Log.Error(err, "Unable to update Probe status")
-				return ctrl.Result{}, err
+				return result, err
 			}
 		}
 	}
 
-	return ctrl.Result{}, nil
+	return result, nil
 }
 
 // SetupWithManager sets up the controller with the Manager.
